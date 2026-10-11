@@ -5,6 +5,7 @@ import { adminLogin } from '../../Controllers/Admin/Admin.js';
 import { getProfile} from '../../Controllers/Admin/Admin.js';
 import{checkLogin} from "../../MiddleWare/LoginCheack.js"
 import { logout} from '../../Controllers/Admin/Admin.js'
+import {geAlltAdmins} from '../../Controllers/Admin/Admin.js'
 
 export const AdminRouter= express.Router()
 
@@ -53,9 +54,11 @@ AdminRouter.post("/Register", [
 
 ],postAdminInfo)
 
+AdminRouter.get("/admins",geAlltAdmins)
 
 AdminRouter.post("/Login",adminLogin )
 
 AdminRouter.get("/Me",checkLogin,getProfile)
 
 AdminRouter.post("/Logout", logout)
+

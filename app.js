@@ -78,6 +78,10 @@ app.use("/Products", ProductRouter);
 
 app.use("/Admin", AdminRouter);
 
+app.get("/test", (req, res) => {
+  res.send("Main server works!");
+});
+
 
 // =====================================================
 // Database

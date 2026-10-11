@@ -141,5 +141,13 @@ export function logout(req, res,next){
 }
 
 export async function geAlltAdmins(req,res,next){
-
+try{
+    const admins= await PanelAdmin.find()
+    return res.status(201).json({
+        message:"ادمین ها با موفقیت پیدا شدند",
+        data:admins
+    })
+} catch(err){
+    next(err)
+}
 }
