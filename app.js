@@ -15,6 +15,8 @@ import cookieParser from "cookie-parser";
 
 
 const app = express();
+
+console.log("TEST ROUTE REGISTERED");
 app.use(express.json())
 app.use(cookieParser())
 // =====================================================
@@ -78,9 +80,6 @@ app.use("/Products", ProductRouter);
 
 app.use("/Admin", AdminRouter);
 
-app.get("/test", (req, res) => {
-  res.send("Main server works!");
-});
 
 
 // =====================================================
@@ -101,6 +100,8 @@ app.use(errormidleware);
 // Server
 // =====================================================
 
-app.listen(process.env.PORT, () => {
-  console.log("Connected To Port 4000");
+const PORT = process.env.PORT || 4000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
