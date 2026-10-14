@@ -116,17 +116,18 @@ export async function getProductById(req, res, next) {
     const { id } = req.params
     try {
         const product = await Product.findById(id)
-
-        res.status(200).json({
-            success:true,
-            data:product
-        })
         
         if (!product) {
             const error = new Error("محصولی با این شناسه وجود ندارد")
             error.status = 404
             throw error
         }
+
+         res.status(200).json({
+            success:true,
+            data:product
+        })
+        
     } catch(err){
         next(err)
     }

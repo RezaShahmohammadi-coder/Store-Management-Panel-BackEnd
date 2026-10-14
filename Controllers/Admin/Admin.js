@@ -92,13 +92,13 @@ export async function adminLogin(req, res, next) {
 
         }
 
-        const token = jwt.sign({ sub: Admin._id, name: Admin.name, email: Admin.email }, process.env.JWT_SECRET, { expiresIn: "10m" })
+        const token = jwt.sign({ sub: Admin._id, name: Admin.name, email: Admin.email, role:Admin.available }, process.env.JWT_SECRET, { expiresIn: "10m" })
 
         res.cookie("adminToken", token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "lax",
-            maxAge: 60 * 1000,
+            maxAge: 10*60 * 1000,
         });
 
         res.status(200).json({

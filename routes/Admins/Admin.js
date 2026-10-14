@@ -6,10 +6,12 @@ import { getProfile} from '../../Controllers/Admin/Admin.js';
 import{checkLogin} from "../../MiddleWare/LoginCheack.js"
 import { logout} from '../../Controllers/Admin/Admin.js'
 import {geAlltAdmins} from '../../Controllers/Admin/Admin.js'
+import { rbac } from '../../MiddleWare/RBACMiddleware.js';
+import { Roles } from '../../Models/enum/RolesEnum.js';
 
 export const AdminRouter= express.Router()
 
-AdminRouter.post("/Register", [
+AdminRouter.post("/Register",checkLogin,rbac(Roles.SUPER_ADMIN), [
     body("name")
     .notEmpty()
     .withMessage("لطفا نام مدیر را وارد کنید")

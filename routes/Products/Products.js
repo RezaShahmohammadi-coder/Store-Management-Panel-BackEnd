@@ -5,14 +5,18 @@ import { body } from "express-validator";
 import {createProduct} from"../../Controllers/Products/Product.js"
 import { updateProduct } from '../../Controllers/Products/Product.js';
  import { getProductById } from '../../Controllers/Products/Product.js';
+import { checkLogin } from '../../MiddleWare/LoginCheack.js';
+import { rbac } from '../../MiddleWare/RBACMiddleware.js';
+import { Roles } from '../../Models/enum/RolesEnum.js';
+
 
 export const ProductRouter= express.Router();
 
 ProductRouter.get("/", getAllProduct)
 
-ProductRouter.delete("/Delete/:id", deleteProductById)
+ProductRouter.delete("/Delete/:id",checkLogin,rbac(Roles.SUPER_ADMIN), deleteProductById)
 
-ProductRouter.post("/Create",[
+ProductRouter.post("/Create",checkLogin,[
 body("title")
     .trim()
     .notEmpty()
@@ -52,7 +56,7 @@ body("title")
 
 )
 
-ProductRouter.put("/Update/:id",[
+ProductRouter.put("/Update/:id",checkLogin,rbac(Roles.SUPER_ADMIN),[
 body("title")
     .trim()
     .notEmpty()
