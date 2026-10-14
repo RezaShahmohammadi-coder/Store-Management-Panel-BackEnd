@@ -44,42 +44,90 @@ export async function deleteProductById(req, res, next) {
 }
 
 
-    export async function createProduct(req, res, next) {
-        
-        console.log(req.body)
-        const result = validationResult(req);
-        console.log(result)
-        
-        if (!result.isEmpty()) {
-            const errors = result.array().map((error) => ({
-                field: error.path,
-                message: error.msg,
-            }));
+export async function createProduct(req, res, next) {
 
-            return res.status(400).json({
-                success: false,
-                message: "اطلاعات وارد شده صحیح نیست",
-                errors,
-            })
+    console.log(req.body)
+    const result = validationResult(req);
+    console.log(result)
+
+    if (!result.isEmpty()) {
+        const errors = result.array().map((error) => ({
+            field: error.path,
+            message: error.msg,
+        }));
+
+        return res.status(400).json({
+            success: false,
+            message: "اطلاعات وارد شده صحیح نیست",
+            errors,
+        })
+    }
+
+    try {
+        const details = {
+            title: req.body.title,
+            price: req.body.price,
+            category: req.body.category,
+            image: req.body.image,
+            description: req.body.description,
+            id: Date.now()
+        }
+        const newProduct = await Product.create(details)
+        res.status(201).json({
+            message: "محصول شما با موفقیت ایجاد شد",
+            data: newProduct
+        })
+    } catch (err) {
+        const error = new Error(err)
+        error.status = 500
+        return next(error)
+    }
+}
+
+
+export async function updateProduct(req, res, next) {
+    const { id } = req.params
+    const { title, price, image, category, description } = req.body
+    try {
+        let product = await Product.findByIdAndUpdate(
+            id,
+            { title, price, image, category, description },
+            { new: true, runValidators: true }
+        )
+        res.status(200).json({
+            success: true,
+            data: product
+        })
+
+        if (!id || !product) {
+            const error = new Error("محصولی با این شناسه وجود ندارد")
+            error.status = 400
+            throw error
         }
 
-        try {
-            const details = {
-                title: req.body.title,
-                price: req.body.price,
-                category: req.body.category,
-                image: req.body.image,
-                description: req.body.description,
-                id: Date.now()
-            }
-            const newProduct = await Product.create(details)
-            res.status(201).json({
-                message: "محصول شما با موفقیت ایجاد شد",
-                data: newProduct
-            })
-        } catch (err) {
-            const error = new Error(err)
-            error.status = 500
-            return next(error)
+    } catch (err) {
+        next(err)
+    }
+
+
+}
+
+export async function getProductById(req, res, next) {
+    const { id } = req.params
+    try {
+        const product = await Product.findById(id)
+
+        res.status(200).json({
+            success:true,
+            data:product
+        })
+        
+        if (!product) {
+            const error = new Error("محصولی با این شناسه وجود ندارد")
+            error.status = 404
+            throw error
         }
+    } catch(err){
+        next(err)
+    }
     }

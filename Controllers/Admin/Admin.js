@@ -92,7 +92,7 @@ export async function adminLogin(req, res, next) {
 
         }
 
-        const token = jwt.sign({ sub: Admin._id, name: Admin.name, email: Admin.email }, process.env.JWT_SECRET, { expiresIn: "1m" })
+        const token = jwt.sign({ sub: Admin._id, name: Admin.name, email: Admin.email }, process.env.JWT_SECRET, { expiresIn: "10m" })
 
         res.cookie("adminToken", token, {
             httpOnly: true,
