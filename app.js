@@ -1,28 +1,34 @@
+
 import express from "express";
-import mongoose from "mongoose";
 import "dotenv/config";
 import cors from "cors";
 import session from "express-session";
 import MongoDBStoreFactory from "connect-mongodb-session";
-
-import connectDb from "./DataBase/Connect.js";
+import cookieParser from "cookie-parser";
 
 import { ProductRouter } from "./routes/Products/Products.js";
 import { AdminRouter } from "./routes/Admins/Admin.js";
 
 import { errormidleware } from "./MiddleWare/ErrorMiddleware.js";
-import cookieParser from "cookie-parser";
-
+import { tracker } from "./MiddleWare/Tracker.MiddleWare.js";
 
 const app = express();
 
-console.log("TEST ROUTE REGISTERED");
-app.use(express.json())
-app.use(cookieParser())
-// =====================================================
-// MongoDB Session Store
-// =====================================================
+// 1. درخواست‌های JSON
+app.use(express.json());
 
+// 2. خواندن Cookieها
+app.use(cookieParser());
+
+// 3. تنظیم CORS
+app.use(
+  cors({
+    origin: "http://localhost:3003",
+    credentials: true,
+  })
+);
+
+// 4. ساخت MongoDB Session Store
 const MongoDBStore = MongoDBStoreFactory(session);
 
 const store = new MongoDBStore({
@@ -31,19 +37,13 @@ const store = new MongoDBStore({
   collection: "sessions",
 });
 
-
-// =====================================================
-// Session
-// =====================================================
-
+// 5. تنظیم Session
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
-    store: store,
-
+    store,
     resave: false,
     saveUninitialized: false,
-
     cookie: {
       maxAge: 1000 * 60 * 60 * 24,
       httpOnly: true,
@@ -51,57 +51,15 @@ app.use(
     },
   })
 );
-// =====================================================
-// Upload Images
-// =====================================================
 
+// 6. محدودیت درخواست‌ها
+app.use(tracker);
 
-
-// =====================================================
-// Middlewares
-// =====================================================
-
-app.use(express.json());
-
-app.use(
-  cors({
-    origin: "http://localhost:3003",
-    credentials: true,
-  })
-);
-
-
-
-// =====================================================
-// Routers
-// =====================================================
-
+// 7. Routerها
 app.use("/Products", ProductRouter);
-
 app.use("/Admin", AdminRouter);
 
-
-
-// =====================================================
-// Database
-// =====================================================
-
-await connectDb();
-
-
-// =====================================================
-// Error Middleware
-// =====================================================
-
+// 8. مدیریت خطا
 app.use(errormidleware);
 
-
-// =====================================================
-// Server
-// =====================================================
-
-const PORT = process.env.PORT || 4000;
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+export default app;

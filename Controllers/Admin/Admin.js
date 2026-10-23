@@ -5,13 +5,16 @@ import bcrypt from "bcrypt";
 import session from "express-session";
 import jwt from "jsonwebtoken";
 
+/*We pass errors to the front-end in three ways: as 
+'errors' (intended for the validator) and
+ as 'messages'.*/
+
+
+/*  Crate New Admin For Panel From Admins
+ Who Access To Add New Admin*/
 
 export async function postAdminInfo(req, res, next) {
-
     const result = validationResult(req);
-    /* ما ارور هارو به 3 صورت ارورز که برای ولیدتور است و مسیج پاس میدیم به فرانت اند
-    */
-
     if (!result.isEmpty()) {
         const errors = result.array().map((error) => ({
             field: error.path,
@@ -104,16 +107,6 @@ export async function adminLogin(req, res, next) {
         res.status(200).json({
     message: "ورود موفقیت‌آمیز بود"
 });
-
-        // req.session.adminId = Admin._id.toString()
-        //req.session.isLoggedIn = true;
-
-        /* res.status(200).json({
-             message: "شما با موفقیت وارد پنل  شدید",
-             isLoggedIn:req.session.isLoggedIn
- 
-         })*/
-
 
     } catch (err) {
         next(err)
